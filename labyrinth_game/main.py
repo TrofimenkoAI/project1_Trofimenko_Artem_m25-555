@@ -1,11 +1,39 @@
 #!/usr/bin/env python3
 
 
-from labyrinth_game import constants, player_actions, utils
-from labyrinth_game.constants import ROOMS
-from labyrinth_game.player_actions import get_input
+#from labyrinth_game.constants import ROOMS
+from labyrinth_game.player_actions import (
+    get_input,
+    move_player,
+    show_inventory,
+    take_item,
+    use_item,
+)
 from labyrinth_game.utils import describe_current_room
 
+
+def process_command(game_state: dict, command: str) -> None:
+    parts = command.strip().split()
+    if not parts:
+        return
+    cmd = parts[0].lower()
+    arg = parts[1] if len(parts) > 1 else ""
+    match cmd:
+        case "look":
+            describe_current_room(game_state)
+        case "use":
+            if arg:
+                use_item(game_state, arg)
+        case "go":
+            if arg:
+                move_player(game_state, arg)
+        case "take":
+            if arg:
+                take_item(game_state, arg)
+        case "inventory":
+            show_inventory(game_state)
+        case "quit" | "exit":
+            game_state["game_over"] = True
 
 
 def main() -> None:
@@ -21,11 +49,8 @@ def main() -> None:
 
     while not game_state["game_over"]:
         command = get_input("> ")
-
-        if command == "quit":
-            game_state["game_over"] = True
+        process_command(game_state, command)
 
 
 if __name__ == "__main__":
     main()
-
