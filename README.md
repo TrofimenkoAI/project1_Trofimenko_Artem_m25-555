@@ -24,6 +24,7 @@ quit — выйти из игры
 
 ## Демонстрация (asciinema)
 
-<script async id="asciicast-vDnaQbCigsMTkuNqRLOQKA6yx" src="https://asciinema.org/a/vDnaQbCigsMTkuNqRLOQKA6yx.js"></script>
+[![asciicast](https://asciinema.org/a/vDnaQbCigsMTkuNqRLOQKA6yx.svg)](https://asciinema.org/a/vDnaQbCigsMTkuNqRLOQKA6yx?autoplay=1)
+
 
 
