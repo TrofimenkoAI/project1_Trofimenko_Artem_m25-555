@@ -6,8 +6,8 @@
 
 Требования: Python 3.11+, Poetry.
 
-make install
-make project
+- `make install`
+- `make project`
 
 ## Управление
 
