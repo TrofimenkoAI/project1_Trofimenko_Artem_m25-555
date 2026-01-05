@@ -77,8 +77,75 @@ def random_event(game_state: dict) -> None:
             trigger_trap(game_state)
 
 
+def _normalize_answer(value: str) -> str:
+    s = str(value).strip().lower().replace("ё", "е")
+    s = " ".join(s.split())
+    return s
+
+
+def _russian_number_words(n: int) -> str:
+    ones = {
+        0: "ноль",
+        1: "один",
+        2: "два",
+        3: "три",
+        4: "четыре",
+        5: "пять",
+        6: "шесть",
+        7: "семь",
+        8: "восемь",
+        9: "девять",
+        10: "десять",
+        11: "одиннадцать",
+        12: "двенадцать",
+        13: "тринадцать",
+        14: "четырнадцать",
+        15: "пятнадцать",
+        16: "шестнадцать",
+        17: "семнадцать",
+        18: "восемнадцать",
+        19: "девятнадцать",
+    }
+    tens = {
+        20: "двадцать",
+        30: "тридцать",
+        40: "сорок",
+        50: "пятьдесят",
+        60: "шестьдесят",
+        70: "семьдесят",
+        80: "восемьдесят",
+        90: "девяносто",
+    }
+
+    if n in ones:
+        return ones[n]
+    if n in tens:
+        return tens[n]
+    if 20 < n < 100:
+        t = (n // 10) * 10
+        o = n % 10
+        if t in tens and o in ones:
+            return f"{tens[t]} {ones[o]}"
+    return str(n)
+
+
+def _accepted_answers(correct_answer) -> set[str]:
+    answers = {_normalize_answer(correct_answer)}
+
+    s = str(correct_answer).strip()
+    try:
+        n = int(s)
+        answers.add(_normalize_answer(n))
+        answers.add(_normalize_answer(_russian_number_words(n)))
+    except ValueError:
+        pass
+
+    return answers
+
+
 def solve_puzzle(game_state: dict) -> None:
-    room = ROOMS[game_state["current_room"]]
+    current_room_name = game_state["current_room"]
+    room = ROOMS[current_room_name]
     puzzle = room.get("puzzle")
 
     if puzzle is None:
@@ -87,15 +154,29 @@ def solve_puzzle(game_state: dict) -> None:
 
     question, correct_answer = puzzle
     print(question)
-    user_answer = input("Ваш ответ: ").strip().lower()
+    user_answer = input("Ваш ответ: ").strip()
 
-    if user_answer == str(correct_answer).strip().lower():
+    accepted = _accepted_answers(correct_answer)
+    if _normalize_answer(user_answer) in accepted:
         print("Верно! Загадка решена.")
         room["puzzle"] = None
-        if "treasure_key" not in game_state["player_inventory"]:
-            game_state["player_inventory"].append("treasure_key")
+
+        rewards = {
+            "library": "treasure_key",
+            "observatory": "map_fragment",
+        }
+        reward = rewards.get(current_room_name)
+        if reward:
+            inventory = game_state["player_inventory"]
+            if reward not in inventory:
+                inventory.append(reward)
+            items = room.get("items", [])
+            if reward in items:
+                items.remove(reward)
     else:
         print("Неверно. Попробуйте снова.")
+        if current_room_name == "trap_room":
+            trigger_trap(game_state)
 
 
 def attempt_open_treasure(game_state: dict) -> None:
@@ -134,13 +215,7 @@ def attempt_open_treasure(game_state: dict) -> None:
     else:
         print("Неверный код.")
 
-def show_help():
+def show_help(commands: dict) -> None:
     print("\nДоступные команды:")
-    print("  go <direction>  - перейти в направлении (north/south/east/west)")
-    print("  look            - осмотреть текущую комнату")
-    print("  take <item>     - поднять предмет")
-    print("  use <item>      - использовать предмет из инвентаря")
-    print("  inventory       - показать инвентарь")
-    print("  solve           - попытаться решить загадку в комнате")
-    print("  quit            - выйти из игры")
-    print("  help            - показать это сообщение")
+    for command, description in commands.items():
+        print(f"  {command:<16} - {description}")

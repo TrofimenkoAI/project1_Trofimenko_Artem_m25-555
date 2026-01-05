@@ -21,13 +21,25 @@ def get_input(prompt: str = "> ") -> str:
 def move_player(game_state: dict, direction: str) -> None:
     room = ROOMS[game_state["current_room"]]
     exits = room.get("exits", {})
-    if direction in exits:
-        game_state["current_room"] = exits[direction]
-        game_state["steps_taken"] += 1
-        describe_current_room(game_state)
-        random_event(game_state)
-    else:
+    if direction not in exits:
         print("Нельзя пойти в этом направлении.")
+        return
+
+    next_room = exits[direction]
+    inventory = game_state["player_inventory"]
+
+    if next_room == "treasure_room":
+        if "rusty_key" in inventory:
+            print("Вы используете найденный ключ, чтобы открыть путь "
+                  "в комнату сокровищ.")
+        else:
+            print("Дверь заперта. Нужен ключ, чтобы пройти дальше.")
+            return
+
+    game_state["current_room"] = next_room
+    game_state["steps_taken"] += 1
+    describe_current_room(game_state)
+    random_event(game_state)
 
 
 def take_item(game_state: dict, item_name: str) -> None:
@@ -51,7 +63,7 @@ def use_item(game_state: dict, item_name: str) -> None:
     elif item_name == "silver_amulet":
         print("Вы сломали амулет и он сказал вам идти в обсерваторию.")
     elif item_name == "map_fragment":
-        print("Карта показывает, что ключ в библиотеке.")
+        print("Карта показывает, что ключ на востоке от входа.")
     elif item_name == "sword":
         print("Вы чувствуете уверенность.")
     elif item_name == "bronze_box":

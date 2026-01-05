@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-#from labyrinth_game.constants import ROOMS
+from labyrinth_game.constants import COMMANDS
 from labyrinth_game.player_actions import (
     get_input,
     move_player,
@@ -17,7 +17,7 @@ from labyrinth_game.utils import (
 )
 
 
-def process_command(game_state: dict, command: str) -> None:
+def process_command(game_state: dict, command: str, commands: dict) -> None:
     parts = command.strip().split()
     if not parts:
         return
@@ -32,13 +32,15 @@ def process_command(game_state: dict, command: str) -> None:
         case "go":
             if arg:
                 move_player(game_state, arg)
+        case "north" | "south" | "east" | "west":
+            move_player(game_state, cmd)
         case "take":
             if arg:
                 take_item(game_state, arg)
         case "inventory":
             show_inventory(game_state)
         case "help":
-            show_help()
+            show_help(commands)
         case "solve":
             if game_state["current_room"] == "treasure_room":
                 attempt_open_treasure(game_state)
@@ -63,7 +65,7 @@ def main() -> None:
     describe_current_room(game_state)
     while not game_state["game_over"]:
         command = get_input("> ")
-        process_command(game_state, command)
+        process_command(game_state, command, COMMANDS)
 
 
 if __name__ == "__main__":
