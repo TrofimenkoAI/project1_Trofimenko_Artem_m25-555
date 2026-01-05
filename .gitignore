@@ -1,4 +1,6 @@
 .venv/
 dist/
-__pycache__
+__pycache__/
 .DS_Store
+poetry.lock
+.ruff_cache/
