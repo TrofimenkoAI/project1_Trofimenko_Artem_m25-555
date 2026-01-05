@@ -51,8 +51,8 @@ ROOMS = {
         "puzzle": None,
     },
     "treasure_room": {
-        "description": """Комната, на столе большой сундук. 
-        Дверь заперта — нужен особый ключ.""",
+        "description": "Комната, на столе большой сундук. "
+        "Дверь заперта — нужен особый ключ.",
         "exits": {"south": "hall"},
         "items": ["treasure_chest"],
         "puzzle": (
