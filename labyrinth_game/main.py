@@ -9,7 +9,11 @@ from labyrinth_game.player_actions import (
     take_item,
     use_item,
 )
-from labyrinth_game.utils import describe_current_room
+from labyrinth_game.utils import (
+    attempt_open_treasure,
+    describe_current_room,
+    solve_puzzle,
+)
 
 
 def process_command(game_state: dict, command: str) -> None:
@@ -32,6 +36,11 @@ def process_command(game_state: dict, command: str) -> None:
                 take_item(game_state, arg)
         case "inventory":
             show_inventory(game_state)
+        case "solve":
+            if game_state["current_room"] == "treasure_room":
+                attempt_open_treasure(game_state)
+            else:
+                solve_puzzle(game_state)
         case "quit" | "exit":
             game_state["game_over"] = True
 
@@ -46,7 +55,6 @@ def main() -> None:
 
     print("Добро пожаловать в Лабиринт сокровищ!")
     describe_current_room(game_state)
-
     while not game_state["game_over"]:
         command = get_input("> ")
         process_command(game_state, command)

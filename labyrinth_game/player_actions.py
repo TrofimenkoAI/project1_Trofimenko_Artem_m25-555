@@ -47,6 +47,10 @@ def use_item(game_state: dict, item_name: str) -> None:
         return
     if item_name == "torch":
         print("Стало светлее.")
+    elif item_name == "silver_amulet":
+        print("Вы сломали амулет и он сказал вам идти в обсерваторию.")
+    elif item_name == "map_fragment":
+        print("Карта показывает, что ключ в библиотеке.")
     elif item_name == "sword":
         print("Вы чувствуете уверенность.")
     elif item_name == "bronze_box":
@@ -55,3 +59,4 @@ def use_item(game_state: dict, item_name: str) -> None:
             inventory.append("rusty_key")
     else:
         print("Вы не знаете, как использовать этот предмет.")
+
